@@ -130,62 +130,97 @@ def plot_val_time_series(start_date, end_date, buoy, height, ws_df, dt_df, seaso
 
 
 def plot_heatmap(start_date, end_date, buoy, height, ws_df, season):
+    total_time = pd.date_range(start_date, end_date, freq='H')
     # variable reassign
     obs_ws = ws_df[0]
-    wrf_v41_ws = ws_df[1]
+    wrf_ws = ws_df[1]
     nam_ws = ws_df[2]
     gfs_ws = ws_df[3]
     hrrr_ws = ws_df[4]
 
     # Statistics Setup
-    mf_41 = fnl.metrics(obs_ws, wrf_v41_ws)
+    wrf_m = fnl.metrics(obs_ws, wrf_ws)
     nam_m = fnl.metrics(obs_ws, nam_ws)
     hrrr_m = fnl.metrics(obs_ws, hrrr_ws)
     gfs_m = fnl.metrics(obs_ws, gfs_ws)
 
-    # Heat SCATTER Plots--------------------------------------------------------------------------------------------
-    wind_speeds = [wrf_v41_ws, nam_ws, gfs_ws, hrrr_ws]
+    # Statistics Setup for Wind Speeds between 3m/s and 15m/s
+    # binning and making a new dataset so original doesn't get NaN
+    obs_ws_b = obs_ws.copy()
+    wrf_ws_b = wrf_ws.copy()
+    nam_ws_b = nam_ws.copy()
+    gfs_ws_b = gfs_ws.copy()
+    hrrr_ws_b = hrrr_ws.copy()
+    obs_ws_b[(obs_ws_b > 15) | (obs_ws_b < 3)] = np.nan
+    # wrf_ws_b[(wrf_ws_b > 15) | (wrf_ws_b < 3)] = np.nan
+    # nam_ws_b[(nam_ws_b > 15) | (nam_ws_b < 3)] = np.nan
+    # gfs_ws_b[(gfs_ws_b > 15) | (gfs_ws_b < 3)] = np.nan
+    # hrrr_ws_b[(hrrr_ws_b > 15) | (hrrr_ws_b < 3)] = np.nan
+
+    wrf_b = fnl.metrics(obs_ws_b, wrf_ws_b)
+    nam_b = fnl.metrics(obs_ws_b, nam_ws_b)
+    hrrr_b = fnl.metrics(obs_ws_b, hrrr_ws_b)
+    gfs_b = fnl.metrics(obs_ws_b, gfs_ws_b)
+
+    # Loop df setup
+    wind_speeds = [wrf_ws, nam_ws, gfs_ws, hrrr_ws]
+    wind_speeds_b = [wrf_ws_b, nam_ws_b, gfs_ws_b, hrrr_ws_b]
     model_names = ['RU WRF', 'NAM', 'GFS', 'HRRR']
     model_names_dir = ['RUWRF', 'NAM', 'GFS', 'HRRR']
-    metrics_n = [mf_41, nam_m, gfs_m, hrrr_m]
+    metrics_n = [wrf_m, nam_m, gfs_m, hrrr_m]
+    metrics_b = [wrf_b, nam_b, gfs_b, hrrr_b]
 
     for ii in range(0, 4):
-        fig, ax = plt.subplots(1, 1, figsize=(8, 6))
-        plt.style.use(u'seaborn-colorblind')
-        # params = {
-        #     'axes.labelsize': 10,
-        #     'legend.fontsize': 12,
-        #     'xtick.labelsize': 12,
-        #     'ytick.labelsize': 12,
-        #     'text.usetex': False
-        # }
-        # plt.rcParams.update(params)
-
+        # Line stats setup
+        # unbinned data
         idx = np.isfinite(obs_ws) & np.isfinite(wind_speeds[ii])
-
-        cmap = cmo.cm.algae
-        # cmap = mpl.cm.Greens
-        cmaplist = [cmap(i) for i in range(cmap.N)]
-        cmap = mpl.colors.LinearSegmentedColormap.from_list('Custom cmap', cmaplist, cmap.N)
-
-        hexplot = plt.hexbin(obs_ws[idx], wind_speeds[ii][idx],
-                             cmap=cmap, linewidths=.1, gridsize=50, mincnt=1, vmin=0, vmax=30) #, bins='log', cmap='jet')
         slope, intercept, r_value, p_value, std_err = stats.linregress(obs_ws[idx],
                                                                        wind_speeds[ii][idx])
         r2_value = r_value ** 2
-        plt.plot(obs_ws[idx], intercept + slope * obs_ws[idx],
-                 'r', label='fitted line')
+
+        # binned data
+        idx_b = np.isfinite(obs_ws_b) & np.isfinite(wind_speeds_b[ii])
+        slope_b, intercept_b, r_value_b, p_value_b, std_err_b = stats.linregress(obs_ws_b[idx_b],
+                                                                                 wind_speeds_b[ii][idx_b])
+        r2_value_b = r_value_b ** 2
+
+        # figure setup
+        fig, ax = plt.subplots(1, 1, figsize=(8, 6))
+
+        cmap = cmo.cm.algae
+        cmaplist = [cmap(i) for i in range(cmap.N)]
+        cmap = mpl.colors.LinearSegmentedColormap.from_list('Custom cmap', cmaplist, cmap.N)
+        hexplot = plt.hexbin(obs_ws[idx], wind_speeds[ii][idx],
+                             cmap=cmap, linewidths=.1, gridsize=50, mincnt=1, vmin=0, vmax=25) #, bins='log')
+
         plt.plot([0, 25], [0, 25], 'silver')
+        line1 = plt.plot(obs_ws_b[idx_b], intercept_b + slope_b * obs_ws_b[idx_b], linestyle='-', color='red')
+        line2 = plt.plot(obs_ws[idx], intercept + slope * obs_ws[idx], linestyle='-', color='tab:red')
+
         plt.xlabel('Buoy: ' + buoy[0] + ' Wind Speed (m/s)', fontsize='x-large')
         plt.ylabel(model_names[ii] + ' Wind Speed (m/s)', fontsize='x-large')
-        plt.text(1, 20,
+        plt.text(2.5, -11,
+                 'All Wind Speeds' + '\n' +
                  'slope: ' + str("{0:.2f}".format(slope)) + '\n' +
                  'intercept: ' + str("{0:.2f}".format(intercept)) + '\n' +
                  'R-squared: ' + str("{0:.2f}".format(r2_value)) + '\n' +
                  'RMS: ' + str("{0:.2f}".format(metrics_n[ii][0])) + '\n' +
-                 'model bias: ' + str("{0:.2f}".format(metrics_n[ii][2])),
-                 bbox=dict(facecolor='white', alpha=1), fontsize='medium'
+                 'model bias: ' + str("{0:.2f}".format(metrics_n[ii][2])) + '\n' +
+                 'percent uptime: ' + str("{0:.2f}%".format((metrics_n[ii][3] / len(total_time))*100)) + '\n' +
+                 'obs counts above 25 m/s: ' + str("{0:.0f}".format(sum(obs_ws > 25))) + '\n' +
+                 'model counts above 25 m/s: ' + str("{0:.0f}".format(sum(wind_speeds[ii][idx] > 25))),
+                 bbox=dict(facecolor='white', alpha=1), fontsize='medium', ha="left",
                  )
+        plt.text(14.5, -8.7,
+                 'Between 3 and 15 (m/s)' + '\n' +
+                 'slope: ' + str("{0:.2f}".format(slope_b)) + '\n' +
+                 'intercept: ' + str("{0:.2f}".format(intercept_b)) + '\n' +
+                 'R-squared: ' + str("{0:.2f}".format(r2_value_b)) + '\n' +
+                 'RMS: ' + str("{0:.2f}".format(metrics_b[ii][0])) + '\n' +
+                 'model bias: ' + str("{0:.2f}".format(metrics_b[ii][2])),
+                 bbox=dict(facecolor='white', alpha=1), fontsize='medium', ha="left",
+                 )
+
         plt.title('Wind Speeds at ' + buoy[0] + ' at ' + str(height[0]) + 'm' + ' during ' +
                   season[0] + ' ' + start_date.strftime("%Y"), fontsize='large')
 
@@ -502,8 +537,8 @@ def load_data_make_plots(start_date, end_date, buoy, point_location, season, hei
 #     return
 
 # 'summer', 'fall', 'winter', 'spring'
-ssn_code = 'spring'
-year = 2020
+ssn_code = 'winter'
+year = 2021
 
 if ssn_code == 'winter':
     season = 'Winter (DJF)', 'winter_DJF'
@@ -542,5 +577,8 @@ point_location = 'wrf_validation_lite_points_v2.csv'
 # load_data_make_plots(start_date, end_date, buoy, point_location, height=[80])
 # load_data_make_plots(start_date, end_date, buoy, point_location, height=[160])
 buoy = ['ASOSB6', b'ASOSB6']
-load_data_make_plots(start_date, end_date, buoy, point_location, height=[80])
-load_data_make_plots(start_date, end_date, buoy, point_location, height=[160])
+load_data_make_plots(start_date, end_date, buoy, point_location, season, height=[80])
+# load_data_make_plots(start_date, end_date, buoy, point_location, season, height=[160])
+# buoy = ['ASOSB4', b'ASOSB4']
+# load_data_make_plots(start_date, end_date, buoy, point_location, season, height=[80])
+# load_data_make_plots(start_date, end_date, buoy, point_location, season, height=[160])

@@ -545,7 +545,7 @@ def load_data_make_plots(start_date, end_date, buoy, point_location, height):
 #     return
 
 start_date = datetime(2020, 9, 1)
-end_date = datetime(2020, 10, 1) - timedelta(hours=1)
+end_date = datetime(2020, 9, 2) - timedelta(hours=1)
 point_location = 'wrf_validation_lite_points_v2.csv'
 #
 # buoy = ['NYSE06', b'NYSE06']
