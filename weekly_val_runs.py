@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import functions_and_loaders as fnl
 import os
 import argparse
