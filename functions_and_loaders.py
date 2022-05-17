@@ -2,16 +2,12 @@ import xarray as xr
 import numpy as np
 import pandas as pd
 from datetime import datetime, timedelta
-# import matplotlib
-# matplotlib.use("TkAgg")
-# import matplotlib.pyplot as plt
 from erddapy import ERDDAP
 import glob
 import os
 
+
 # WRF Functions
-
-
 def max_min_finder(dataset1, dataset2, dataset3):
     max_ds = []
     min_ds = []
@@ -180,21 +176,6 @@ def load_wrf(start_date, end_date, forecast_offset, version_num, point_location,
     encoding['time'] = dict(units='days since 2010-01-01 00:00:00', calendar='gregorian', dtype=np.double)
 
     return final_dataset
-
-
-def tiny_wrf2nc(start_date, end_date, buoy, point_location):
-    encoding = {}
-    encoding['time'] = dict(units='days since 2010-01-01 00:00:00', calendar='gregorian', dtype=np.double)
-
-    wrf_v41_ds = load_wrf(start_date, end_date, 1, 'v4.1', point_location)
-    outputfile_41 = buoy[0] + '_' + start_date.strftime("%Y%m%d") + '_' + end_date.strftime("%Y%m%d") + '_41ds.nc'
-    wrf_v41_ds.to_netcdf(outputfile_41, encoding=encoding)
-
-    del wrf_v41_ds
-
-    wrf_v39_ds = load_wrf(start_date, end_date, 1, 'v3.9', point_location)
-    outputfile_39 = buoy[0] + '_' + start_date.strftime("%Y%m%d") + '_' + end_date.strftime("%Y%m%d") + '_39ds.nc'
-    wrf_v39_ds.to_netcdf(outputfile_39, encoding=encoding)
 
 
 def load_nam(start_date, end_date, buoy, point_location, height):
