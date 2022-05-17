@@ -1,0 +1,14 @@
+name: wrf_val
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - cmocean=2.0
+  - netcdf4=1.5.8
+  - numpy=1.22.3
+  - pandas=1.4.2
+  - xarray=2022.3.0
+  - scipy=1.8.0
+  - erddapy=1.2.1
+  - matplotlib=3.5.1
+  - seaborn=0.11.2
