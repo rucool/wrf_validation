@@ -13,7 +13,7 @@ Add the channel conda-forge to your .condarc. You can find out more about conda-
 
 Clone the wrf_validation repository
 
-`git clone https://github.com/rucool/wrf_validation.git`
+`git clone https://github.com/JadenD/wrf_validation.git`
 
 Change your current working directory to the location that you downloaded wrf_validation. 
 
