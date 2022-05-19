@@ -7,7 +7,7 @@ Author: Jaden Dicopoulos (jadend@marine.rutgers.edu)
 Rutgers Center for Ocean Observing Leadership
 
 ## Disclaimer
-This toolbox will only run on computer with direct access to the DMCS file server.
+This toolbox will only run on a computer with direct access to the DMCS file server.
 
 ## Installation Instructions
 Add the channel conda-forge to your .condarc. You can find out more about conda-forge from their website: https://conda-forge.org/
