@@ -6,11 +6,11 @@ Author: Jaden Dicopoulos (jadend@marine.rutgers.edu)
 
 Rutgers Center for Ocean Observing Leadership
 
-## Installation Instructions
-Add the channel conda-forge to your .condarc. You can find out more about conda-forge from their website: https://conda-forge.org/
-
 ## Disclaimer
 This toolbox will only run on computer with direct access to the DMCS file server.
+
+## Installation Instructions
+Add the channel conda-forge to your .condarc. You can find out more about conda-forge from their website: https://conda-forge.org/
 
 `conda config --add channels conda-forge`
 
