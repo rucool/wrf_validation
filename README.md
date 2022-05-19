@@ -9,6 +9,9 @@ Rutgers Center for Ocean Observing Leadership
 ## Installation Instructions
 Add the channel conda-forge to your .condarc. You can find out more about conda-forge from their website: https://conda-forge.org/
 
+## Disclaimer
+This toolbox will only run on computer with direct access to the DMCS file server.
+
 `conda config --add channels conda-forge`
 
 Clone the wrf_validation repository
@@ -26,9 +29,3 @@ Create conda environment from the included environment.yml file:
 Once the environment is done building, activate the environment:
 
 `conda activate wrf_val`
-
-Install the toolbox to the conda environment from the root directory of the wrf_tools toolbox:
-
-`pip install .`
-
-The toolbox should now be installed to your conda environment.
