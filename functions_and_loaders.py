@@ -68,7 +68,7 @@ def make_wrf_file(dtime, fo=0, pd=0):
 
 
 def load_wrf(start_date, end_date, forecast_offset, version_num, point_location, buoy, height):
-    # directory = '/home/coolgroup/ru-wrf/real-time/v4.1_parallel/processed/3km/'  # Server
+    directory = '/home/coolgroup/ru-wrf/real-time/v4.1_parallel/processed/3km/'  # server
     if version_num == 'v4.1':
         directory = '/Volumes/home/coolgroup/ru-wrf/real-time/v4.1_parallel/processed/3km/'  # Local
     elif version_num == 'v3.9':
@@ -181,7 +181,7 @@ def load_wrf(start_date, end_date, forecast_offset, version_num, point_location,
 def load_nam(start_date, end_date, buoy, point_location, height):
     sites = pd.read_csv(point_location, skipinitialspace=True)
     time_span_D = pd.date_range(start_date, end_date-timedelta(hours=22), freq='D')  # -timedelta(days=1) was removed from here
-    directory = '/Volumes/home/jad438/validation_data/namdata/'
+    directory = '/home/jad438/validation_data/namdata/'
     nam_ws = []
     nam_wd = []
     nam_dt = np.empty((0,), dtype='datetime64[m]')
@@ -222,7 +222,7 @@ def load_nam(start_date, end_date, buoy, point_location, height):
 def load_gfs(start_date, end_date, buoy, point_location, height):
     sites = pd.read_csv(point_location, skipinitialspace=True)
     time_span_D = pd.date_range(start_date, end_date-timedelta(hours=23), freq='D')  # -timedelta(days=1) was removed from here
-    directory = '/Volumes/home/jad438/validation_data/gfsdata/'
+    directory = '/home/jad438/validation_data/gfsdata/'
     gfs_ws = []
     gfs_dt = np.empty((0,), dtype='datetime64[m]')
 
@@ -273,7 +273,7 @@ def load_gfs(start_date, end_date, buoy, point_location, height):
 def load_hrrr(start_date, end_date, buoy, point_location, height):
     sites = pd.read_csv(point_location, skipinitialspace=True)
     time_span_D = pd.date_range(start_date, end_date-timedelta(hours=23), freq='D')  #  -timedelta(days=1) was removed from here
-    directory = '/Volumes/home/jad438/validation_data/hrrrdata/'
+    directory = '/home/jad438/validation_data/hrrrdata/'
     hrrr_ws = []
     hrrr_dt = np.empty((0,), dtype='datetime64[m]')
 
@@ -310,7 +310,7 @@ def load_hrrr(start_date, end_date, buoy, point_location, height):
 
 
 def sodar_loader(start_date, end_date, height):
-    sodar_dir = '/Volumes/home/coolgroup/MetData/CMOMS/sodar/daily/'
+    sodar_dir = '/home/coolgroup/MetData/CMOMS/sodar/daily/'
 
     all_files_sodar = glob.glob(os.path.join(sodar_dir, 'DAT.data.ftp.wxflow.sodar.202*'))
     all_files_sodar.sort()
@@ -432,23 +432,22 @@ def load_nyserda_ws(buoy, height, start_date, end_date):
     # correction for buoy height
     height = height - 2
 
-    dir = '/Users/JadenD/PycharmProjects/wrf_validation/data/nyserda/'
-    nys_ds = pd.read_csv(dir + filename, error_bad_lines=False, delimiter=', ', engine='python')  # , delim_whitespace=True)
+    directory = '/home/coolgroup/bpu/wrf/data/validation_data/nyserda'
+    nys_ds = pd.read_csv(os.path.join(directory, filename), error_bad_lines=False, delimiter=',', engine='python')  # , delim_whitespace=True)
 
-    nys_ws_1hr_nonav = nys_ds  # data every 6 steps (1 hour)
-    nys_ws_1hr_nonav = nys_ws_1hr_nonav.reset_index()
+    # remove whitespace from column headers
+    nys_ds.columns = nys_ds.columns.str.strip()
 
     time = pd.date_range(start_date, end_date, freq='H')
 
-    nys_ws_1hr_nonav['timestamp'] = pd.to_datetime(nys_ws_1hr_nonav['timestamp'], format='%m-%d-%Y %H:%M')
-    nys_ws_1hr_nonav['lidar_lidar' + str(height) + 'm_Z10_HorizWS'] = pd.to_numeric(nys_ws_1hr_nonav['lidar_lidar' + str(height) + 'm_Z10_HorizWS']
-                                                                                    , errors='coerce')
+    nys_ds['timestamp'] = nys_ds['timestamp'].map(lambda t: pd.to_datetime(t))  # fix timestamp formatting
+    colname = f'lidar_lidar{height}m_Z10_HorizWS'
+    nys_ds[colname] = pd.to_numeric(nys_ds[colname], errors='coerce')
 
-    nys_ws_1hr_nonav = pd.Series(nys_ws_1hr_nonav['lidar_lidar' + str(height) + 'm_Z10_HorizWS'].values,
-                                 index=nys_ws_1hr_nonav['timestamp'])
-    nys_ws_1hr_nonav = nys_ws_1hr_nonav.reindex(time)
+    df = pd.Series(nys_ds[colname].values, index=nys_ds['timestamp'])
+    df = df.reindex(time)
 
-    return nys_ws_1hr_nonav
+    return df
 
 
 def load_ASOSB_ws_heights(start_date, end_date):
