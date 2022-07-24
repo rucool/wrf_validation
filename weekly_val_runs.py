@@ -13,7 +13,7 @@ import matplotlib.dates as mdates
 from datetime import datetime, timedelta
 
 
-def plot_val_time_series(start_date, end_date, buoy, point_location, height):
+def plot_val_time_series(start_date, end_date, buoy, point_location, height, save_dir):
     # Model Range and NYSERDA BUOY and other models
 
     # WRF Load
@@ -143,52 +143,26 @@ def plot_val_time_series(start_date, end_date, buoy, point_location, height):
     ds_table_1 = plt.table(metric_frame_1.values, colLabels=columns, bbox=([.1, -.5, .3, .3]))
     ds_table_2 = plt.table(metric_frame_2.values, colLabels=columns, bbox=([.6, -.5, .3, .3]))
 
-    # plt.savefig('/Users/JadenD/PycharmProjects/wrf_validation/figures/weekly_validation/ws' +
-    #             '_' + buoy[0] +
-    #             '_' + str(height[0]) + 'm'
-    #             '_' + start_date.strftime("%Y%m%d") +
-    #             '_' + end_date.strftime("%Y%m%d") + '.png',
-    #             dpi=300, bbox_inches='tight')
+    sdir = os.path.join(save_dir, start_date.strftime("%Y"), start_date.strftime("%Y%m"))
+    os.makedirs(sdir, exist_ok=True)
+    filename_ext = f'{buoy[0]}_{height[0]}m_{start_date.strftime("%Y%m%d")}_{end_date.strftime("%Y%m%d")}'
+    filename = f'ws_{filename_ext}.png'
+    plt.savefig(os.path.join(sdir, filename), dpi=300, bbox_inches='tight')
 
-    os.makedirs('/Volumes/www/cool/mrs/weather/RUWRF/validation/weekly/' +
-                buoy[0] + '/time_series/wind_speed/' + start_date.strftime("%Y%m"), exist_ok=True)
-    plt.savefig('/Volumes/www/cool/mrs/weather/RUWRF/validation/weekly/' + buoy[0] + '/time_series/wind_speed' +
-                '/' + start_date.strftime("%Y%m") + '/'
-                'ws' +
-                '_' + buoy[0] +
-                '_' + str(height[0]) + 'm'
-                '_' + start_date.strftime("%Y%m%d") +
-                '_' + end_date.strftime("%Y%m%d") + '.png',
-                dpi=300, bbox_inches='tight')
+    stats_filename = f'stats_{filename_ext}.csv'
 
-    metric_frame.to_csv('/Users/JadenD/PycharmProjects/wrf_validation/figures/weekly_validation/stats' +
-                        '_' + buoy[0] +
-                        '_' + str(height[0]) + 'm'
-                        '_' + start_date.strftime("%Y%m%d") +
-                        '_' + end_date.strftime("%Y%m%d") + '.csv', index=None)
-
-    os.makedirs('/Volumes/www/cool/mrs/weather/RUWRF/validation/weekly/' +
-                buoy[0] + '/statistics/wind_speed/' + start_date.strftime("%Y%m"), exist_ok=True)
-    metric_frame.to_csv('/Volumes/www/cool/mrs/weather/RUWRF/validation/weekly/' + buoy[0] + '/statistics/wind_speed' +
-                        '/' + start_date.strftime("%Y%m") + '/'
-                        'stats' +
-                        '_' + buoy[0] +
-                        '_' + str(height[0]) + 'm'
-                        '_' + start_date.strftime("%Y%m%d") +
-                        '_' + end_date.strftime("%Y%m%d") + '.csv', index=None)
-
-    print(metric_frame)
+    metric_frame.to_csv(os.path.join(sdir, stats_filename), index=None)
 
     return
 
 
 def main(args):
-    print(args)
     start_date = datetime.strptime(args.start_date, '%Y%m%d')
     end_date = datetime.strptime(args.end_date, '%Y%m%d') - timedelta(hours=1)
     buoy = [args.buoy, bytes(args.buoy, 'utf-8')]
     height = [args.height]
-    plot_val_time_series(start_date, end_date, buoy, args.point_location, height)
+    save_dir = args.save_dir
+    plot_val_time_series(start_date, end_date, buoy, args.point_location, height, save_dir)
 
 
 if __name__ == '__main__':
@@ -223,6 +197,11 @@ if __name__ == '__main__':
                             default=80,
                             type=list,
                             help='choose a height in meters')
+
+    arg_parser.add_argument('-save_dir',
+                            default='/www/web/rucool/windenergy/ru-wrf/images/validation/weekly',
+                            type=str,
+                            help='Full directory path to save output plots.')
 
     parsed_args = arg_parser.parse_args()
     sys.exit(main(parsed_args))
