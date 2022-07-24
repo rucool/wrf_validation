@@ -182,7 +182,7 @@ if __name__ == '__main__':
 
     arg_parser.add_argument('-b', '--buoy',
                             dest='buoy',
-                            default='ASOSB6',
+                            default='SODAR',
                             type=str,
                             help='Enter a buoy code, they can be found in wrf_validation_points.csv')
 
@@ -199,7 +199,7 @@ if __name__ == '__main__':
                             help='choose a height in meters')
 
     arg_parser.add_argument('-save_dir',
-                            default='/www/web/rucool/windenergy/ru-wrf/images/validation/weekly',
+                            default='/www/web/rucool/windenergy/ru-wrf/validation/weekly',
                             type=str,
                             help='Full directory path to save output plots.')
 
