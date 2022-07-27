@@ -7,7 +7,6 @@ import sys
 import numpy as np
 import pandas as pd
 import matplotlib as mpl
-mpl.matplotlib.use("TkAgg")
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 from datetime import datetime, timedelta
@@ -15,7 +14,7 @@ import cmocean as cmo
 from scipy import stats
 
 
-def plot_val_time_series(start_date, end_date, buoy, height, ws_df, dt_df):
+def plot_val_time_series(start_date, end_date, buoy, height, ws_df, dt_df, save_dir):
     # variable reassign
     obs_ws = ws_df[0]
     wrf_v41_ws = ws_df[1]
@@ -88,41 +87,15 @@ def plot_val_time_series(start_date, end_date, buoy, height, ws_df, dt_df):
 
     ds_table_1 = plt.table(metric_frame_1.values, colLabels=columns, bbox=([.1, -.5, .3, .3]))
 
-    plt.savefig('/Users/JadenD/PycharmProjects/wrf_validation/figures/monthly_validation/ws' +
-                '_' + buoy[0] +
-                '_' + str(height[0]) + 'm'
-                '_' + start_date.strftime("%Y%m%d") +
-                '_' + end_date.strftime("%Y%m%d") + '.png',
-                dpi=300, bbox_inches='tight')
+    sdir = os.path.join(save_dir, start_date.strftime("%Y"), start_date.strftime("%Y%m"))
+    os.makedirs(sdir, exist_ok=True)
 
-    os.makedirs('/Volumes/www/cool/mrs/weather/RUWRF/validation/monthly/' +
-                buoy[0] + '/time_series/wind_speed/' + start_date.strftime("%Y%m"), exist_ok=True)
-    plt.savefig('/Volumes/www/cool/mrs/weather/RUWRF/validation/monthly/' + buoy[0] + '/time_series/wind_speed' +
-                '/' + start_date.strftime("%Y%m") + '/'
-                'ws' +
-                '_' + buoy[0] +
-                '_' + str(height[0]) + 'm'
-                '_' + start_date.strftime("%Y%m%d") +
-                '_' + end_date.strftime("%Y%m%d") + '.png',
-                dpi=300, bbox_inches='tight')
+    filename_ext = f'{buoy[0]}_{height[0]}m_{start_date.strftime("%Y%m%d")}_{end_date.strftime("%Y%m%d")}'
+    filename = f'ws_{filename_ext}.png'
+    plt.savefig(os.path.join(sdir, filename), dpi=300, bbox_inches='tight')
 
-    metric_frame.to_csv('/Users/JadenD/PycharmProjects/wrf_validation/figures/monthly_validation/stats' +
-                        '_' + buoy[0] +
-                        '_' + str(height[0]) + 'm'
-                        '_' + start_date.strftime("%Y%m%d") +
-                        '_' + end_date.strftime("%Y%m%d") + '.csv', index=None)
-
-    os.makedirs('/Volumes/www/cool/mrs/weather/RUWRF/validation/monthly/' +
-                buoy[0] + '/statistics/wind_speed/' + start_date.strftime("%Y%m"), exist_ok=True)
-    metric_frame.to_csv('/Volumes/www/cool/mrs/weather/RUWRF/validation/monthly/' + buoy[0] + '/statistics/wind_speed' +
-                        '/' + start_date.strftime("%Y%m") + '/'
-                        'stats' +
-                        '_' + buoy[0] +
-                        '_' + str(height[0]) + 'm'
-                        '_' + start_date.strftime("%Y%m%d") +
-                        '_' + end_date.strftime("%Y%m%d") + '.csv', index=None)
-
-    print(metric_frame)
+    filename = f'stats_{filename_ext}.csv'
+    metric_frame.to_csv(os.path.join(sdir, filename), index=None)
 
     plt.clf()
     plt.close()
@@ -130,7 +103,7 @@ def plot_val_time_series(start_date, end_date, buoy, height, ws_df, dt_df):
     return
 
 
-def plot_heatmap(start_date, end_date, buoy, height, ws_df):
+def plot_heatmap(start_date, end_date, buoy, height, ws_df, save_dir):
     total_time = pd.date_range(start_date, end_date, freq='H')
     # variable reassign
     obs_ws = ws_df[0]
@@ -138,6 +111,9 @@ def plot_heatmap(start_date, end_date, buoy, height, ws_df):
     nam_ws = ws_df[2]
     gfs_ws = ws_df[3]
     hrrr_ws = ws_df[4]
+
+    obs_count = np.sum(~np.isnan(obs_ws))
+    obs_count_3_15 = np.sum(np.logical_and(obs_ws >= 3, obs_ws <= 15))
 
     # Statistics Setup
     wrf_m = fnl.metrics(obs_ws, wrf_ws)
@@ -210,7 +186,7 @@ def plot_heatmap(start_date, end_date, buoy, height, ws_df):
         plt.xlabel('Buoy: ' + buoy[0] + ' Wind Speed (m/s)', fontsize='x-large')
         plt.ylabel(model_names[ii] + ' Wind Speed (m/s)', fontsize='x-large')
         plt.text(2.5, -11,
-                 'All Wind Speeds' + '\n' +
+                 f'All Wind Speeds (obs n={obs_count})' + '\n' +
                  'slope: ' + str("{0:.2f}".format(slope)) + '\n' +
                  'intercept: ' + str("{0:.2f}".format(intercept)) + '\n' +
                  'R-squared: ' + str("{0:.2f}".format(r2_value)) + '\n' +
@@ -222,7 +198,7 @@ def plot_heatmap(start_date, end_date, buoy, height, ws_df):
                  bbox=dict(facecolor='white', alpha=1), fontsize='medium', ha="left",
                  )
         plt.text(14.5, -8.7,
-                 'Between 3 and 15 (m/s)' + '\n' +
+                 f'Between 3 and 15 (m/s) (obs n={obs_count_3_15})' + '\n' +
                  'slope: ' + str("{0:.2f}".format(slope_b)) + '\n' +
                  'intercept: ' + str("{0:.2f}".format(intercept_b)) + '\n' +
                  'R-squared: ' + str("{0:.2f}".format(r2_value_b)) + '\n' +
@@ -249,17 +225,11 @@ def plot_heatmap(start_date, end_date, buoy, height, ws_df):
             # ticks=bounds
         )
 
-        os.makedirs('/Volumes/www/cool/mrs/weather/RUWRF/validation/monthly/' +
-                    buoy[0] + '/heatmap/wind_speed/' + start_date.strftime("%Y%m"), exist_ok=True)
-        plt.savefig('/Volumes/www/cool/mrs/weather/RUWRF/validation/monthly/' + buoy[0] + '/heatmap/wind_speed' +
-                    '/' + start_date.strftime("%Y%m") + '/'
-                    'ws' +
-                    '_' + buoy[0] +
-                    '_' + model_names_dir[ii] +
-                    '_' + str(height[0]) + 'm'
-                    '_' + start_date.strftime("%Y%m%d") +
-                    '_' + end_date.strftime("%Y%m%d") + '.png',
-                    dpi=300, bbox_inches='tight')
+        sdir = os.path.join(save_dir, start_date.strftime("%Y"), start_date.strftime("%Y%m"))
+        os.makedirs(sdir, exist_ok=True)
+        filename_ext = f'{buoy[0]}_{model_names_dir[ii]}_{height[0]}m_{start_date.strftime("%Y%m%d")}_{end_date.strftime("%Y%m%d")}'
+        filename = f'ws_heatmap_{filename_ext}.png'
+        plt.savefig(os.path.join(sdir, filename), dpi=300, bbox_inches='tight')
 
         plt.clf()
         plt.close()
@@ -272,9 +242,11 @@ def main(args):
     end_date = datetime.strptime(args.end_date, '%Y%m%d') - timedelta(hours=1)
     buoy = [args.buoy, bytes(args.buoy, 'utf-8')]
     height = [args.height]
+    point_location = args.point_location
+    save_dir = args.save_dir
 
     # WRF Load
-    wrf_v41_ds = fnl.load_wrf(start_date, end_date, 1, 'v4.1', args.point_location, buoy=buoy, height=height)
+    wrf_v41_ds = fnl.load_wrf(start_date, end_date, 1, 'v4.1', point_location, buoy=buoy, height=height)
     wrf_v41_ws = wrf_v41_ds.wind_speed.sel(time=slice(start_date, end_date), station=buoy[1], height=height).data
     wrf_v41_ws = wrf_v41_ws.reshape(wrf_v41_ws.__len__())
     wrf_v41_time = wrf_v41_ds.time.sel(time=slice(start_date, end_date)).data
@@ -325,19 +297,20 @@ def main(args):
         obs_time = []
         obs_ws = []
 
-    nam_ws, nam_dt = fnl.load_nam(start_date, end_date, buoy[0], args.point_location, height=height)
-    gfs_ws, gfs_dt = fnl.load_gfs(start_date, end_date, buoy[0], args.point_location, height=height)
-    hrrr_ws, hrrr_dt = fnl.load_hrrr(start_date, end_date, buoy[0], args.point_location, height=height)
+    nam_ws, nam_dt = fnl.load_nam(start_date, end_date, buoy[0], point_location, height=height)
+    gfs_ws, gfs_dt = fnl.load_gfs(start_date, end_date, buoy[0], point_location, height=height)
+    hrrr_ws, hrrr_dt = fnl.load_hrrr(start_date, end_date, buoy[0], point_location, height=height)
 
     ws_df = [obs_ws, wrf_v41_ws, nam_ws, gfs_ws, hrrr_ws]
     dt_df = [obs_time, wrf_v41_time, nam_dt, gfs_dt, hrrr_dt]
 
-    plot_heatmap(start_date, end_date, buoy, height, ws_df)
-    plot_val_time_series(start_date, end_date, buoy, height, ws_df, dt_df)
+    plot_heatmap(start_date, end_date, buoy, height, ws_df, save_dir)
+    plot_val_time_series(start_date, end_date, buoy, height, ws_df, dt_df, save_dir)
 
 
 if __name__ == '__main__':
-    arg_parser = argparse.ArgumentParser(description=main.__doc__, formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    arg_parser = argparse.ArgumentParser(description=main.__doc__,
+                                         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
     arg_parser.add_argument('-s', '--start_date',
                             dest='start_date',
@@ -353,7 +326,7 @@ if __name__ == '__main__':
 
     arg_parser.add_argument('-b', '--buoy',
                             dest='buoy',
-                            default='ASOSB6',
+                            default='SODAR',
                             type=str,
                             help='Enter a buoy code, they can be found in wrf_validation_points.csv')
 
@@ -368,6 +341,11 @@ if __name__ == '__main__':
                             default=80,
                             type=list,
                             help='choose a height in meters 80 and 160 supported')
+
+    arg_parser.add_argument('-save_dir',
+                            default='/www/web/rucool/windenergy/ru-wrf/validation/monthly',
+                            type=str,
+                            help='Full directory path to save output plots.')
 
     parsed_args = arg_parser.parse_args()
     sys.exit(main(parsed_args))
