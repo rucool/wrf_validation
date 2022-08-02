@@ -1,5 +1,11 @@
 #!/usr/bin/env python
 
+"""
+Author: Jaden Dicopoulos
+Last modified: Lori Garzio 8/2/2022
+Run RU-WRF monthly validation at specified validation locations. Creates heat maps and timeseries plots.
+"""
+
 import functions_and_loaders as fnl
 import os
 import argparse

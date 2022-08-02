@@ -1,5 +1,11 @@
 #!/usr/bin/env python
 
+"""
+Author: Jaden Dicopoulos
+Last modified: Lori Garzio 8/2/2022
+Run RU-WRF weekly validation at specified validation locations.
+"""
+
 import functions_and_loaders as fnl
 import os
 import argparse
