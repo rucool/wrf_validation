@@ -144,7 +144,7 @@ def plot_val_time_series(start_date, end_date, buoy, point_location, height, sav
     sdir = os.path.join(save_dir, start_date.strftime("%Y"), start_date.strftime("%Y%m"))
     os.makedirs(sdir, exist_ok=True)
     filename_ext = f'{buoy[0]}_{height[0]}m_{start_date.strftime("%Y%m%d")}_{end_date.strftime("%Y%m%d")}'
-    filename = f'ws_{filename_ext}.png'
+    filename = f'ws_timeseries_{filename_ext}.png'
     plt.savefig(os.path.join(sdir, filename), dpi=300, bbox_inches='tight')
 
     stats_filename = f'stats_{filename_ext}.csv'
