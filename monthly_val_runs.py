@@ -91,7 +91,17 @@ def plot_val_time_series(start_date, end_date, buoy, height, ws_df, dt_df, save_
 
     metric_frame_1 = pd.DataFrame(metric_frame_1)
 
+    metric_frame_2 = {'Model': ['NAM', 'GFS'],
+                      'RMS': np.round([nam_m[0], gfs_m[0]], 3),
+                      'CRMS': np.round([nam_m[1], gfs_m[1]], 3),
+                      'MB': np.round([nam_m[2], gfs_m[2]], 3),
+                      'Count': [nam_m[3], gfs_m[3]]
+                      }
+
+    metric_frame_2 = pd.DataFrame(metric_frame_2)
+
     ds_table_1 = plt.table(metric_frame_1.values, colLabels=columns, bbox=([.1, -.5, .3, .3]))
+    ds_table_2 = plt.table(metric_frame_2.values, colLabels=columns, bbox=([.6, -.5, .3, .3]))
 
     sdir = os.path.join(save_dir, start_date.strftime("%Y"), start_date.strftime("%Y%m"))
     os.makedirs(sdir, exist_ok=True)
