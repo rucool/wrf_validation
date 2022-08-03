@@ -339,13 +339,13 @@ if __name__ == '__main__':
 
     arg_parser.add_argument('-s', '--start_date',
                             dest='start_date',
-                            default='20201101',
+                            default='20200101',
                             type=str,
                             help='Start Date for run in YYYYMMDD ')
 
     arg_parser.add_argument('-e', '--end_date',
                             dest='end_date',
-                            default='20201108',
+                            default='20210101',
                             type=str,
                             help='End Date for run in YYYYMMDD (one hour will be subtracted from this date)')
 
