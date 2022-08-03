@@ -70,9 +70,9 @@ def make_wrf_file(dtime, fo=0, pd=0):
 def load_wrf(start_date, end_date, forecast_offset, version_num, point_location, buoy, height):
     directory = '/home/coolgroup/ru-wrf/real-time/v4.1_parallel/processed/3km/'  # server
     if version_num == 'v4.1':
-        directory = '/home/coolgroup/ru-wrf/real-time/v4.1_parallel/processed/3km/'  # Local
+        directory = '/home/coolgroup/ru-wrf/real-time/v4.1_parallel/processed/3km/'
     elif version_num == 'v3.9':
-        directory = '/home/coolgroup/ru-wrf/real-time/processed/3km/'  # Local
+        directory = '/home/coolgroup/ru-wrf/real-time/processed/3km/'
     else:
         print('Wrong Version Number')
 
@@ -126,7 +126,7 @@ def load_wrf(start_date, end_date, forecast_offset, version_num, point_location,
         try:
             wrf_file = make_wrf_file(t, forecast_offset)
             ncdata = xr.open_dataset(directory + wrf_file)
-            print('Processing: ' + str(t) + ' File: ' + wrf_file)
+            print(directory + wrf_file)
             lats = ncdata.XLAT.squeeze()
             lons = ncdata.XLONG.squeeze()
 
