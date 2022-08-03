@@ -128,9 +128,6 @@ def plot_heatmap(start_date, end_date, buoy, height, ws_df, save_dir):
     gfs_ws = ws_df[3]
     hrrr_ws = ws_df[4]
 
-    obs_count = np.sum(~np.isnan(obs_ws))
-    obs_count_3_15 = np.sum(np.logical_and(obs_ws >= 3, obs_ws <= 15))
-
     # Statistics Setup
     wrf_m = fnl.metrics(obs_ws, wrf_ws)
     nam_m = fnl.metrics(obs_ws, nam_ws)
@@ -202,7 +199,7 @@ def plot_heatmap(start_date, end_date, buoy, height, ws_df, save_dir):
         plt.xlabel('Buoy: ' + buoy[0] + ' Wind Speed (m/s)', fontsize='x-large')
         plt.ylabel(model_names[ii] + ' Wind Speed (m/s)', fontsize='x-large')
         plt.text(2.5, -11,
-                 f'All Wind Speeds (obs n={obs_count})' + '\n' +
+                 f'All Wind Speeds (n={np.sum(idx_b)})' + '\n' +
                  'slope: ' + str("{0:.2f}".format(slope)) + '\n' +
                  'intercept: ' + str("{0:.2f}".format(intercept)) + '\n' +
                  'R-squared: ' + str("{0:.2f}".format(r2_value)) + '\n' +
@@ -214,7 +211,7 @@ def plot_heatmap(start_date, end_date, buoy, height, ws_df, save_dir):
                  bbox=dict(facecolor='white', alpha=1), fontsize='medium', ha="left",
                  )
         plt.text(14.5, -8.7,
-                 f'Between 3 and 15 (m/s) (obs n={obs_count_3_15})' + '\n' +
+                 'Between 3 and 15 (m/s)' + '\n' +
                  'slope: ' + str("{0:.2f}".format(slope_b)) + '\n' +
                  'intercept: ' + str("{0:.2f}".format(intercept_b)) + '\n' +
                  'R-squared: ' + str("{0:.2f}".format(r2_value_b)) + '\n' +
