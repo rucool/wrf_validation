@@ -211,8 +211,7 @@ def plot_heatmap(start_date, end_date, buoy, height, ws_df, save_dir):
                  bbox=dict(facecolor='white', alpha=1), fontsize='medium', ha="left",
                  )
         plt.text(14.5, -8.7,
-                 'Between 3 and 15 (m/s)' + '\n' +
-                 f'n={np.sum(idx_b)}' + '\n' +
+                 f'Between 3-15 m/s (n={np.sum(idx_b)})' + '\n' +
                  'slope: ' + str("{0:.2f}".format(slope_b)) + '\n' +
                  'intercept: ' + str("{0:.2f}".format(intercept_b)) + '\n' +
                  'R-squared: ' + str("{0:.2f}".format(r2_value_b)) + '\n' +
