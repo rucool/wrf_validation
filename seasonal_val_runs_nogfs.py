@@ -82,10 +82,10 @@ def plot_val_time_series(start_date, end_date, buoy, height, ws_df, dt_df, seaso
     #                 }
 
     metric_frame = {'Model': ['RU WRF', 'NAM', 'HRRR'],
-                    'RMS': np.round([mf_41[0], nam_m[0], gfs_m[0], hrrr_m[0]], 3),
-                    'CRMS': np.round([mf_41[1], nam_m[1], gfs_m[1], hrrr_m[1]], 3),
-                    'MB': np.round([mf_41[2], nam_m[2], gfs_m[2], hrrr_m[2]], 3),
-                    'Count': [mf_41[3], nam_m[3], gfs_m[3], hrrr_m[3]]
+                    'RMS': np.round([mf_41[0], nam_m[0], hrrr_m[0]], 3),
+                    'CRMS': np.round([mf_41[1], nam_m[1], hrrr_m[1]], 3),
+                    'MB': np.round([mf_41[2], nam_m[2], hrrr_m[2]], 3),
+                    'Count': [mf_41[3], nam_m[3], hrrr_m[3]]
                     }
 
     metric_frame = pd.DataFrame(metric_frame)
@@ -107,10 +107,10 @@ def plot_val_time_series(start_date, end_date, buoy, height, ws_df, dt_df, seaso
     #                   }
 
     metric_frame_2 = {'Model': ['NAM'],
-                      'RMS': np.round([nam_m[0], gfs_m[0]], 3),
-                      'CRMS': np.round([nam_m[1], gfs_m[1]], 3),
-                      'MB': np.round([nam_m[2], gfs_m[2]], 3),
-                      'Count': [nam_m[3], gfs_m[3]]
+                      'RMS': np.round([nam_m[0]], 3),
+                      'CRMS': np.round([nam_m[1]], 3),
+                      'MB': np.round([nam_m[2]], 3),
+                      'Count': [nam_m[3]]
                       }
 
     metric_frame_2 = pd.DataFrame(metric_frame_2)
