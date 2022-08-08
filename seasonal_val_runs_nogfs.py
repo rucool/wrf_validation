@@ -181,7 +181,7 @@ def plot_heatmap(start_date, end_date, buoy, height, ws_df, season, save_dir):
     metrics_n = [wrf_m, nam_m, hrrr_m]
     metrics_b = [wrf_b, nam_b, hrrr_b]
 
-    for ii in range(0, 4):
+    for ii in range(0, 3):
         # Line stats setup
         # unbinned data
         idx = np.isfinite(obs_ws) & np.isfinite(wind_speeds[ii])
