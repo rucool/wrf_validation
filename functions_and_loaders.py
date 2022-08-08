@@ -451,8 +451,8 @@ def load_nyserda_ws(buoy, height, start_date, end_date):
 
 
 def load_ASOSB_ws_heights(start_date, end_date):
-    as_dir = '/Users/JadenD/PycharmProjects/covid19/data/atlantic_shores/AtlanticShores_ASOW-6_wind_80m_1year.nc'
-    as_ds = xr.open_dataset(as_dir)
+    as_file = '/home/coolgroup/bpu/wrf/data/validation_data/atlantic_shores_buoy/AtlanticShores_ASOW-6.nc'
+    as_ds = xr.open_dataset(as_file)
 
     as_ds.time.data = pd.to_datetime(as_ds.time.data, format='%m-%d-%Y %H:%M')
     time_h = pd.date_range(start_date, end_date - timedelta(hours=1), freq='H')
