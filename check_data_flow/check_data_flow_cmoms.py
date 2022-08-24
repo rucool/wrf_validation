@@ -3,7 +3,7 @@
 """
 Author: Lori Garzio on 8/24/2022
 Last modified: Lori Garzio 8/24/2022
-Check data flow for the Coastal Metocean Monitoring Station
+Check latest timestamp for the Coastal Metocean Monitoring Station
 Plots here: https://rucool.marine.rutgers.edu/data/meteorological-modeling/coastal-metocean-monitoring-station/
 """
 
