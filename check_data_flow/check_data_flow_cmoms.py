@@ -24,7 +24,7 @@ def main():
     last_ts = pd.to_datetime(np.nanmax(tm)).strftime('%Y-%m-%d %H:%M')
 
     # return the most recent timestamp
-    print(f'{last_ts} UTC)')
+    print(f'{last_ts} UTC')
 
 
 if __name__ == '__main__':
