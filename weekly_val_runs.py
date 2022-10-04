@@ -2,7 +2,7 @@
 
 """
 Author: Jaden Dicopoulos
-Last modified: Lori Garzio 8/2/2022
+Last modified: Lori Garzio 10/4/2022
 Run RU-WRF weekly validation at specified validation locations.
 """
 
@@ -78,11 +78,33 @@ def plot_val_time_series(start_date, end_date, buoy, point_location, height, sav
     gfs_ws, gfs_dt = fnl.load_gfs(start_date, end_date, buoy[0], point_location, height=height)
     hrrr_ws, hrrr_dt = fnl.load_hrrr(start_date, end_date, buoy[0], point_location, height=height)
 
+    # Create dataframes for each dataset
+    obs_dict = {'time': obs_time, 'obs_ws': obs_ws}
+    obs_df = pd.DataFrame(obs_dict)
+
+    wrf_v41_dict = {'time': wrf_v41_time, 'wrf_v41_ws': wrf_v41_ws}
+    wrf_df = pd.DataFrame(wrf_v41_dict)
+
+    nam_dict = {'time': nam_dt, 'nam_ws': nam_ws}
+    nam_df = pd.DataFrame(nam_dict)
+
+    hrrr_dict = {'time': hrrr_dt, 'hrrr_ws': hrrr_ws}
+    hrrr_df = pd.DataFrame(hrrr_dict)
+
+    gfs_dict = {'time': gfs_dt, 'gfs_ws': gfs_ws}
+    gfs_df = pd.DataFrame(gfs_dict)
+
+    # Merge dataframes to make sure timestamps line up
+    obs_wrf_df = obs_df.merge(wrf_df, how='inner', on='time')
+    obs_nam_df = obs_df.merge(nam_df, how='inner', on='time')
+    obs_hrrr_df = obs_df.merge(hrrr_df, how='inner', on='time')
+    obs_gfs_df = obs_df.merge(gfs_df, how='inner', on='time')
+
     # Statistics Setup
-    mf_41 = fnl.metrics(obs_ws, wrf_v41_ws)
-    nam_m = fnl.metrics(obs_ws, nam_ws)
-    hrrr_m = fnl.metrics(obs_ws, hrrr_ws)
-    gfs_m = fnl.metrics(obs_ws, gfs_ws)
+    mf_41 = fnl.metrics(np.array(obs_wrf_df.obs_ws), np.array(obs_wrf_df.wrf_v41_ws))
+    nam_m = fnl.metrics(np.array(obs_nam_df.obs_ws), np.array(obs_nam_df.nam_ws))
+    hrrr_m = fnl.metrics(np.array(obs_hrrr_df.obs_ws), np.array(obs_hrrr_df.hrrr_ws))
+    gfs_m = fnl.metrics(np.array(obs_gfs_df.obs_ws), np.array(obs_gfs_df.gfs_ws))
 
     # Plotting Start
     plt.figure(figsize=(14, 5))
