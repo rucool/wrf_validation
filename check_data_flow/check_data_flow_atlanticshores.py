@@ -11,6 +11,7 @@ import argparse
 import sys
 import numpy as np
 import pandas as pd
+from datetime import timedelta
 from erddapy import ERDDAP
 
 
@@ -47,9 +48,10 @@ def main(args):
     valid_ts = ds.time.values[idx]
 
     last_ts = pd.to_datetime(np.nanmax(valid_ts)).strftime('%Y-%m-%d %H:%M')
+    valid_2wk = np.sum(valid_ts>pd.Timestamp.now()-timedelta(days=14))
 
     # return the most recent timestamp containing valid data for the height of interest
-    print(f'{last_ts} GMT')
+    print(f'{last_ts} GMT ({valid_2wk} valid data points in last 14 days)')
 
 
 if __name__ == '__main__':
