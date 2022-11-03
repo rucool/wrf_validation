@@ -349,7 +349,7 @@ if __name__ == '__main__':
 
     arg_parser.add_argument('-e', '--end_date',
                             dest='end_date',
-                            default='20201108',
+                            default='20201201',
                             type=str,
                             help='End Date for run in YYYYMMDD (one hour will be subtracted from this date)')
 
