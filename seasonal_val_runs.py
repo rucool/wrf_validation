@@ -2,7 +2,7 @@
 
 """
 Author: Jaden Dicopoulos
-Last modified: Lori Garzio 8/2/2022
+Last modified: Lori Garzio 12/6/2022
 Run RU-WRF seasonal validation at specified validation locations. Creates heat maps and timeseries plots.
 """
 
@@ -20,22 +20,16 @@ import cmocean as cmo
 from scipy import stats
 
 
-def plot_val_time_series(start_date, end_date, buoy, height, ws_df, dt_df, season, save_dir):
+def plot_val_time_series(start_date, end_date, buoy, height, ws_df, time, season, save_dir):
     # variable reassign
-    obs_ws = ws_df[0]
-    wrf_v41_ws = ws_df[1]
-    nam_ws = ws_df[2]
-    gfs_ws = ws_df[3]
-    hrrr_ws = ws_df[4]
-
-    obs_time = dt_df[0]
-    wrf_v41_time = dt_df[1]
-    nam_dt = dt_df[2]
-    gfs_dt = dt_df[3]
-    hrrr_dt = dt_df[4]
+    obs_ws = np.array(ws_df['obs_ws'])
+    wrf_ws = np.array(ws_df['wrf_v41_ws'])
+    nam_ws = np.array(ws_df['nam_ws'])
+    gfs_ws = np.array(ws_df['gfs_ws'])
+    hrrr_ws = np.array(ws_df['hrrr_ws'])
 
     # Statistics Setup
-    mf_41 = fnl.metrics(obs_ws, wrf_v41_ws)
+    mf_41 = fnl.metrics(obs_ws, wrf_ws)
     nam_m = fnl.metrics(obs_ws, nam_ws)
     hrrr_m = fnl.metrics(obs_ws, hrrr_ws)
     gfs_m = fnl.metrics(obs_ws, gfs_ws)
@@ -45,8 +39,8 @@ def plot_val_time_series(start_date, end_date, buoy, height, ws_df, dt_df, seaso
     plt.style.use(u'seaborn-colorblind')
     lw = 1
 
-    line3, = plt.plot(obs_time, obs_ws, color='black', label=buoy[0], linewidth=lw+.5, zorder=3)
-    line1, = plt.plot(wrf_v41_time, wrf_v41_ws, color='red', label='RU WRF', linewidth=lw, zorder=5)
+    line3, = plt.plot(time, obs_ws, color='black', label=buoy[0], linewidth=lw+.5, zorder=3)
+    line1, = plt.plot(time, wrf_ws, color='red', label='RU WRF', linewidth=lw, zorder=5)
 
     # Power Law Wind Speed Change
     if height[0] == 160:
@@ -57,7 +51,7 @@ def plot_val_time_series(start_date, end_date, buoy, height, ws_df, dt_df, seaso
         print('Power Law used')
     else:
         print(str(height[0]) + 'm was used, no power law')
-        line5, = plt.plot(hrrr_dt, hrrr_ws, color='tab:blue', label='HRRR', linewidth=lw, zorder=4)
+        line5, = plt.plot(time, hrrr_ws, color='tab:blue', label='HRRR', linewidth=lw, zorder=4)
         # line4, = plt.plot(nam_dt, nam_ws, color='tab:olive', label='NAM', linewidth=lw-1, zorder=2)
         # line6, = plt.plot(gfs_dt, gfs_ws, color='tab:green', label='GFS', linewidth=lw-1, zorder=1)
 
@@ -123,11 +117,11 @@ def plot_val_time_series(start_date, end_date, buoy, height, ws_df, dt_df, seaso
 def plot_heatmap(start_date, end_date, buoy, height, ws_df, season, save_dir):
     total_time = pd.date_range(start_date, end_date, freq='H')
     # variable reassign
-    obs_ws = ws_df[0]
-    wrf_ws = ws_df[1]
-    nam_ws = ws_df[2]
-    gfs_ws = ws_df[3]
-    hrrr_ws = ws_df[4]
+    obs_ws = np.array(ws_df['obs_ws'])
+    wrf_ws = np.array(ws_df['wrf_v41_ws'])
+    nam_ws = np.array(ws_df['nam_ws'])
+    gfs_ws = np.array(ws_df['gfs_ws'])
+    hrrr_ws = np.array(ws_df['hrrr_ws'])
 
     # Statistics Setup
     wrf_m = fnl.metrics(obs_ws, wrf_ws)
@@ -327,11 +321,30 @@ def main(args):
     gfs_ws, gfs_dt = fnl.load_gfs(start_date, end_date, buoy[0], point_location, height=height)
     hrrr_ws, hrrr_dt = fnl.load_hrrr(start_date, end_date, buoy[0], point_location, height=height)
 
-    ws_df = [obs_ws, wrf_v41_ws, nam_ws, gfs_ws, hrrr_ws]
-    dt_df = [obs_time, wrf_v41_time, nam_dt, gfs_dt, hrrr_dt]
+    # Create dataframes for each dataset
+    obs_dict = {'time': obs_time, 'obs_ws': obs_ws}
+    obs_df = pd.DataFrame(obs_dict)
 
-    plot_heatmap(start_date, end_date, buoy, height, ws_df, season, save_dir)
-    plot_val_time_series(start_date, end_date, buoy, height, ws_df, dt_df, season, save_dir)
+    wrf_v41_dict = {'time': wrf_v41_time, 'wrf_v41_ws': wrf_v41_ws}
+    wrf_df = pd.DataFrame(wrf_v41_dict)
+
+    nam_dict = {'time': nam_dt, 'nam_ws': nam_ws}
+    nam_df = pd.DataFrame(nam_dict)
+
+    hrrr_dict = {'time': hrrr_dt, 'hrrr_ws': hrrr_ws}
+    hrrr_df = pd.DataFrame(hrrr_dict)
+
+    gfs_dict = {'time': gfs_dt, 'gfs_ws': gfs_ws}
+    gfs_df = pd.DataFrame(gfs_dict)
+
+    # Merge dataframes to make sure timestamps line up
+    obs_wrf_df = obs_df.merge(wrf_df, how='outer', on='time')
+    obs_wrf_nam_df = obs_wrf_df.merge(nam_df, how='outer', on='time')
+    obs_wrf_nam_hrrr_df = obs_wrf_nam_df.merge(hrrr_df, how='outer', on='time')
+    obs_wrf_nam_hrrr_gfs_df = obs_wrf_nam_hrrr_df.merge(gfs_df, how='outer', on='time')
+
+    plot_heatmap(start_date, end_date, buoy, height, obs_wrf_nam_hrrr_gfs_df, save_dir)
+    plot_val_time_series(start_date, end_date, buoy, height, obs_wrf_nam_hrrr_gfs_df, obs_wrf_nam_hrrr_gfs_df['time'], save_dir)
 
 
 if __name__ == '__main__':
