@@ -343,8 +343,8 @@ def main(args):
     obs_wrf_nam_hrrr_df = obs_wrf_nam_df.merge(hrrr_df, how='outer', on='time')
     obs_wrf_nam_hrrr_gfs_df = obs_wrf_nam_hrrr_df.merge(gfs_df, how='outer', on='time')
 
-    plot_heatmap(start_date, end_date, buoy, height, obs_wrf_nam_hrrr_gfs_df, save_dir)
-    plot_val_time_series(start_date, end_date, buoy, height, obs_wrf_nam_hrrr_gfs_df, obs_wrf_nam_hrrr_gfs_df['time'], save_dir)
+    plot_heatmap(start_date, end_date, buoy, height, obs_wrf_nam_hrrr_gfs_df, ssn_code, save_dir)
+    plot_val_time_series(start_date, end_date, buoy, height, obs_wrf_nam_hrrr_gfs_df, obs_wrf_nam_hrrr_gfs_df['time'], ssn_code, save_dir)
 
 
 if __name__ == '__main__':
