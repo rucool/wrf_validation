@@ -135,7 +135,7 @@ def plot_heatmap(start_date, end_date, buoy, height, ws_df, save_dir):
     nam_ws_b = nam_ws.copy()
     gfs_ws_b = gfs_ws.copy()
     hrrr_ws_b = hrrr_ws.copy()
-    obs_ws_b[(obs_ws_b > 15) | (obs_ws_b < 3)] = np.nan
+    obs_ws_b[(obs_ws_b > 12) | (obs_ws_b < 3)] = np.nan
     # wrf_ws_b[(wrf_ws_b > 15) | (wrf_ws_b < 3)] = np.nan
     # nam_ws_b[(nam_ws_b > 15) | (nam_ws_b < 3)] = np.nan
     # gfs_ws_b[(gfs_ws_b > 15) | (gfs_ws_b < 3)] = np.nan
