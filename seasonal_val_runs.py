@@ -136,7 +136,7 @@ def plot_heatmap(start_date, end_date, buoy, height, ws_df, season, save_dir):
     nam_ws_b = nam_ws.copy()
     gfs_ws_b = gfs_ws.copy()
     hrrr_ws_b = hrrr_ws.copy()
-    obs_ws_b[(obs_ws_b > 12) | (obs_ws_b < 3)] = np.nan
+    obs_ws_b[(obs_ws_b > 10.9) | (obs_ws_b < 3)] = np.nan
     # wrf_ws_b[(wrf_ws_b > 15) | (wrf_ws_b < 3)] = np.nan
     # nam_ws_b[(nam_ws_b > 15) | (nam_ws_b < 3)] = np.nan
     # gfs_ws_b[(gfs_ws_b > 15) | (gfs_ws_b < 3)] = np.nan
@@ -197,7 +197,7 @@ def plot_heatmap(start_date, end_date, buoy, height, ws_df, season, save_dir):
                  bbox=dict(facecolor='white', alpha=1), fontsize='medium', ha="left",
                  )
         plt.text(14.5, -8.7,
-                 f'Between 3-12 m/s (n={np.sum(idx_b)})' + '\n' +
+                 f'Between 3-10.9 m/s (n={np.sum(idx_b)})' + '\n' +
                  'slope: ' + str("{0:.2f}".format(slope_b)) + '\n' +
                  'intercept: ' + str("{0:.2f}".format(intercept_b)) + '\n' +
                  'R-squared: ' + str("{0:.2f}".format(r2_value_b)) + '\n' +
