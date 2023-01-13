@@ -116,13 +116,13 @@ if __name__ == '__main__':
 
     arg_parser.add_argument('-b', '--buoy',
                             dest='buoy',
-                            default='NYSWE05',
+                            default='N2',
                             type=str,
-                            help='Enter a buoy code, they can be found in wrf_validation_points.csv')
+                            help='Enter a buoy code, they can be found in wrf_validation_points.csv or virtual_met_towers.csv (make sure point_location argument matches)')
 
     arg_parser.add_argument('-p', '--point_location',
                             dest='point_location',
-                            default='wrf_validation_points.csv',
+                            default='virtual_met_towers.csv',
                             type=str,
                             help='choose .csv file of lat, lons, and buoy codes')
 
