@@ -1,2 +1,5 @@
 latitude,longitude,name, long_name, wind_height,start_date,end_date,status
 39.351,-74.03,N2,Virtual Met Tower N2,,,,
+39.27298755,-74.09254511,OSCA0499,Atlantic Shores
+39.065615,-74.37892926,OSCA0532,Orsted
+39.12230094,-74.24223026,OSCA0498,Ocean Wind
