@@ -35,8 +35,8 @@ def main(args):
 
     start = dt.datetime.strptime(start_str, '%Y%m%d')
     end = dt.datetime.strptime(end_str, '%Y%m%d') + dt.timedelta(hours=23)
-    start_title = dt.datetime.strptime(start_str, '%Y%m%d')        #.strftime('%Y-%m-%d')
-    end_title = dt.datetime.strptime(end_str, '%Y%m%d')            #.strftime('%Y-%m-%d')
+    start_datetime = dt.datetime.strptime(start_str, '%Y%m%d')        #.strftime('%Y-%m-%d')
+    end_datetime = dt.datetime.strptime(end_str, '%Y%m%d')            #.strftime('%Y-%m-%d')
 
     #new title with month and year
     m_start = start_datetime.month ; m_end = end_datetime.month
