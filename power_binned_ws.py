@@ -14,6 +14,7 @@ import xarray as xr
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import calendar
 pd.set_option('display.width', 320, "display.max_columns", 15)  # for display in pycharm console
 plt.rcParams.update({'font.size': 16})  # all font sizes are 12 unless otherwise specified
 
@@ -34,8 +35,15 @@ def main(args):
 
     start = dt.datetime.strptime(start_str, '%Y%m%d')
     end = dt.datetime.strptime(end_str, '%Y%m%d') + dt.timedelta(hours=23)
-    start_title = dt.datetime.strptime(start_str, '%Y%m%d').strftime('%Y-%m-%d')
-    end_title = dt.datetime.strptime(end_str, '%Y%m%d').strftime('%Y-%m-%d')
+    start_title = dt.datetime.strptime(start_str, '%Y%m%d')        #.strftime('%Y-%m-%d')
+    end_title = dt.datetime.strptime(end_str, '%Y%m%d')            #.strftime('%Y-%m-%d')
+
+    #new title with month and year
+    m_start = start_datetime.month ; m_end = end_datetime.month
+    start_title = calendar.month_name[m_start] +'-'+ str(start_datetime.year)
+    end_title =  calendar.month_name[m_end] +'-'+ str(end_datetime.year)
+    
+
     site_lat_title = np.round(site_lat, 2)
     site_lon_title = np.round(site_lon, 2)
 
@@ -66,9 +74,13 @@ def main(args):
 
     wind_speed = np.sqrt(u ** 2 + v ** 2)
     df = pd.read_csv('./files/wrf_lw15mw_power.csv')
+    df['Power'] = df['Power']* 0.000001          #convert to gW
     power = np.interp(wind_speed, df['Wind Speed'], df['Power'])  # kW
     centers = np.arange(.5, 25.5, 1)
     power_sum = centers * np.nan
+
+    #total power for time period
+    power_total = ("{:.3f}".format(np.sum(power)))
 
     for i, c in enumerate(centers):
         idx = np.where(np.logical_and(wind_speed >= c - 0.5, wind_speed < c + 0.5))[0]
@@ -80,7 +92,7 @@ def main(args):
     ax.set_xlim(0, 25)
     ax.set_ylabel('Total Energy (kWh)')
     ax.set_xlabel('Wind Speed Bin (m/s)')
-    ax.set_title(f'Total Energy by Wind Speed at {buoy} ({site_lon_title}, {site_lat_title}) {height}m\n{start_title} to {end_title}')
+    ax.set_title(f'Total Energy by Wind Speed at {buoy} ({site_lon_title}, {site_lat_title}) {height}m\n{start_title} to {end_title}, Total Power Generated = {power_total}GWh')
 
     # add max power line
     ax.axvline(x=10.9, color='k', linestyle='--')
