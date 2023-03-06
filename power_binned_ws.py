@@ -90,6 +90,7 @@ def main(args):
     fig, ax = plt.subplots(figsize=(12, 8))
     ax.bar(centers, power_sum, width=1, edgecolor='k', alpha=.9)
     ax.set_xlim(0, 25)
+    ax.set_ylim(0,3.0)
     ax.set_ylabel('Total Energy (GWh)')
     ax.set_xlabel('Wind Speed Bin (m/s)')
     ax.set_title(f'Total Energy by Wind Speed at {buoy} ({site_lon_title}, {site_lat_title}) {height}m\n{start_title} to {end_title}, Total Power Generated = {power_total}GWh')
