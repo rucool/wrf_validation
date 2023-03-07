@@ -87,8 +87,16 @@ def main(args):
         if len(idx) > 0:
             power_sum[i] = np.sum(power[idx])
 
+
+    #add in percent below max power
+    count = sum(speed < 10.9 for speed in wind_speed)
+     # Calculate the percentage
+    percentage = count / len(wind_speed) * 100
+
+
     fig, ax = plt.subplots(figsize=(12, 8))
     ax.bar(centers, power_sum, width=1, edgecolor='k', alpha=.9)
+    ax.text(5,2.8,"Wind Speed Below Max Power(10.9 m/s):" +" "+ str(percentage) + '%' ,fontsize = 10, ha= 'center', va = 'center')
     ax.set_xlim(0, 25)
     ax.set_ylim(0,3.0)
     ax.set_ylabel('Total Energy (GWh)')
