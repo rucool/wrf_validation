@@ -109,10 +109,10 @@ def main(args):
     cs = np.cumsum(np.nan_to_num(power_sum, 0))
     cs = cs/np.nanmax(cs) * 100
 
-    ax0 = ax.twinx()
-    ax0.plot(centers, cs, linewidth=2, c='k')
-    ax0.set_ylim(0, 101)
-    ax0.set_ylabel('Cumulative Sum (%)')
+    #ax0 = ax.twinx()
+    #ax0.plot(centers, cs, linewidth=2, c='k')
+    #ax0.set_ylim(0, 101)
+    #ax0.set_ylabel('Cumulative Sum (%)')
 
     save_file = os.path.join(sdir, f'power_binned_ws_{buoy}_{start_str}_{end_str}.png')
     plt.savefig(save_file, dpi=300)
