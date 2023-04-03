@@ -184,11 +184,11 @@ def plot_heatmap(start_date, end_date, buoy, height, ws_df, save_dir):
         cmaplist = [cmap(i) for i in range(cmap.N)]
         cmap = mpl.colors.LinearSegmentedColormap.from_list('Custom cmap', cmaplist, cmap.N)
         hexplot = plt.hexbin(obs_ws[idx], wind_speeds[ii][idx],
-                             cmap=cmap, linewidths=.1, gridsize=50, mincnt=1, vmin=0, vmax=10) #, bins='log', cmap='jet')
+                             cmap=cmap, linewidths=.1, gridsize=50, mincnt=1, vmin=0, vmax=15) #, bins='log', cmap='jet')
 
         plt.plot([0, 25], [0, 25], 'silver')
-        line1 = plt.plot(obs_ws_b[idx_b], intercept_b + slope_b * obs_ws_b[idx_b], linestyle='-', color='red')
-        line2 = plt.plot(obs_ws[idx], intercept + slope * obs_ws[idx], linestyle='-', color='tab:red')
+        line1 = plt.plot(obs_ws_b[idx_b], intercept_b + slope_b * obs_ws_b[idx_b], linestyle='-', color='magenta')
+        line2 = plt.plot(obs_ws[idx], intercept + slope * obs_ws[idx], linestyle='-', color='blue')
 
         plt.xlabel('Buoy: ' + buoy[0] + ' Wind Speed (m/s)', fontsize='x-large')
         plt.ylabel(model_names[ii] + ' Wind Speed (m/s)', fontsize='x-large')
